@@ -5,8 +5,6 @@ on:
     types: [closed]
   pull_request_review:
     types: [submitted]
-  workflow_run:
-    types: [completed]
   issues:
     types: [closed]
   workflow_dispatch:
