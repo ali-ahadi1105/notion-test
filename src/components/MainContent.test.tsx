@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import { fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MainContent } from '@/components/MainContent'
 import { useSidebarStore } from '@/store/sidebarStore'
@@ -13,7 +14,7 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/'),
 }))
 
-const mockUseSidebarStore = useSidebarStore as jest.Mock
+const mockUseSidebarStore = useSidebarStore as unknown as jest.Mock
 
 describe('MainContent', () => {
   beforeEach(() => {
@@ -153,6 +154,3 @@ describe('MainContent', () => {
     expect(main).toHaveClass('bg-notion-bgSecondary')
   })
 })
-
-// Need to import fireEvent
-import { fireEvent } from '@testing-library/react'

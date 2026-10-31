@@ -9,7 +9,7 @@ jest.mock('@/store/sidebarStore', () => ({
   useSidebarStore: jest.fn(),
 }))
 
-const mockUseSidebarStore = useSidebarStore as jest.Mock
+const mockUseSidebarStore = useSidebarStore as unknown as jest.Mock
 
 describe('Sidebar', () => {
   beforeEach(() => {
