@@ -24,4 +24,4 @@ Object.defineProperty(window, 'matchMedia', {
 window.scrollTo = jest.fn()
 
 // Import jest-dom matchers after jest globals are available
-require('@testing-library/jest-dom')
+import '@testing-library/jest-dom'
