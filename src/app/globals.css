@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 55 53 47;
+  }
+
+  * {
+    @apply border-notion-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-notion-bgSecondary text-notion-text antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-notion-border rounded-full hover:bg-notion-textMuted transition-colors;
+  }
+
+  ::-webkit-scrollbar-corner {
+    @apply bg-transparent;
+  }
+
+  /* Focus visible styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-notion-accent ring-offset-2 ring-offset-notion-bg;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-notion-accent/20 text-notion-text;
+  }
+}
+
+@layer components {
+  .prose-notion {
+    @apply text-notion-text;
+  }
+
+  .prose-notion h1 {
+    @apply text-3xl font-light tracking-tight text-notion-text;
+  }
+
+  .prose-notion h2 {
+    @apply text-2xl font-normal tracking-tight text-notion-text mt-8 mb-4;
+  }
+
+  .prose-notion h3 {
+    @apply text-xl font-medium text-notion-text mt-6 mb-3;
+  }
+
+  .prose-notion p {
+    @apply text-notion-text leading-relaxed my-4;
+  }
+
+  .prose-notion a {
+    @apply text-notion-accent hover:text-notion-accentHover underline-offset-2 hover:underline;
+  }
+
+  .prose-notion code {
+    @apply bg-notion-bgSecondary text-notion-text px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+
+  .prose-notion pre {
+    @apply bg-notion-bgSecondary border border-notion-border rounded-lg p-4 overflow-x-auto my-4;
+  }
+
+  .prose-notion pre code {
+    @apply bg-transparent p-0 text-sm;
+  }
+
+  .prose-notion blockquote {
+    @apply border-l-2 border-notion-accent pl-4 italic text-notion-textSecondary my-4;
+  }
+
+  .prose-notion ul {
+    @apply list-disc list-inside my-4 space-y-2;
+  }
+
+  .prose-notion ol {
+    @apply list-decimal list-inside my-4 space-y-2;
+  }
+
+  .prose-notion li {
+    @apply leading-relaxed;
+  }
+
+  .prose-notion table {
+    @apply w-full border-collapse my-4;
+  }
+
+  .prose-notion th,
+  .prose-notion td {
+    @apply border border-notion-border px-3 py-2 text-left;
+  }
+
+  .prose-notion th {
+    @apply bg-notion-bgSecondary font-medium;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: animateIn 0.2s ease-out;
+  }
+
+  @keyframes animateIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
