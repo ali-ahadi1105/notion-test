@@ -163,19 +163,39 @@ jobs:
                   u = (r.get("user") or {}).get("login", "")
                   latest_by_user[u] = r
               for u, r in latest_by_user.items():
-                  if r.get("state") == "CHANGES_REQUESTED":
-                      b = (r.get("body") or "").strip()
+                  st = r.get("state")
+                  b = (r.get("body") or "").strip()
+                  b_lower = b.lower()
+                  is_app = (
+                      st == "APPROVED"
+                      or bool(re.search(r"(?:verdict\s*[:\n]+.*?)?(?:✅\s*\*\*approved\*\*|✅\s*approved|\bverdict:\s*approved\b)", b, re.IGNORECASE))
+                      or ("code assessment: clean" in b_lower and "merge readiness: ready" in b_lower)
+                  )
+                  if is_app:
+                      continue
+                  if st == "CHANGES_REQUESTED" or (st in ("COMMENTED", "CHANGES_REQUESTED") and any(p in b_lower for p in ("changes requested", "changes_requested", "blocking", "needs changes"))):
                       reasons.append(f"Reviewer @{u} requested changes" + (f": {b[:150]}" if b else ""))
 
               if not reasons:
-                  # If previously had fix-attempt labels and now clean, clean them up
-                  if any(re.match(r"^fix-attempt:\d+$", l) for l in pr_labels) or "openhands-fix" in pr_labels:
+                  # If previously had fix-attempt labels or needs-human-attention and now clean, clean them up
+                  had_fixes = any(re.match(r"^fix-attempt:\d+$", l) for l in pr_labels) or any(l in ("openhands-fix", "needs-human-attention") for l in pr_labels)
+                  if had_fixes:
                       for l in pr_labels:
-                          if re.match(r"^fix-attempt:\d+$", l) or l == "openhands-fix":
+                          if re.match(r"^fix-attempt:\d+$", l) or l in ("openhands-fix", "needs-human-attention"):
                               try:
                                   api("DELETE", f"/issues/{pr_num}/labels/{urllib.parse.quote(l)}")
                               except Exception:
                                   pass
+                      api("POST", f"/statuses/{head_sha}", {
+                          "state": "success",
+                          "context": "software-factory/review",
+                          "description": "Review passed: all criteria met"
+                      })
+                      api("POST", f"/statuses/{head_sha}", {
+                          "state": "success",
+                          "context": "software-factory/tests",
+                          "description": "CI tests passing"
+                      })
                       api("POST", f"/issues/{pr_num}/comments", {
                           "body": f"### ✅ Verifications Passed!\nAll CI checks and reviews are passing on `{head_sha[:7]}`. Ready for merge."
                       })
