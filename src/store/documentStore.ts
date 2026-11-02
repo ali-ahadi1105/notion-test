@@ -355,6 +355,40 @@ export const useDocumentStore = create<DocumentStoreState>()(
         return descendants
       },
 
+      moveDocument: (id: string, newParentId: string | null) => {
+        let success = false
+        
+        set((state) => {
+          const index = state.documents.findIndex((doc) => doc.id === id)
+          if (index === -1) return state
+
+          const doc = state.documents[index]
+          
+          // Check for circular reference - can't move a parent to its own descendant
+          const descendants = get().getDescendants(id)
+          const descendantIds = new Set(descendants.map(d => d.id))
+          if (newParentId && descendantIds.has(newParentId)) {
+            return state
+          }
+          
+          // Can't move a document to itself
+          if (newParentId === id) {
+            return state
+          }
+
+          const newDocuments = [...state.documents]
+          newDocuments[index] = {
+            ...doc,
+            parentId: newParentId,
+            updatedAt: Date.now(),
+          }
+          success = true
+          return { documents: newDocuments }
+        })
+
+        return success
+      },
+
       // Utility
       generateSlug: (title: string, parentId: string | null) => {
         const existingSlugs = getAllSlugs(get().documents)

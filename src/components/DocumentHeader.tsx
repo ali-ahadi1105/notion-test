@@ -12,9 +12,106 @@ import {
   Star,
   Copy,
   Archive,
-  RotateCcw,
   Upload,
   Search,
+  FileText,
+  Folder,
+  BookOpen,
+  Calendar,
+  Settings,
+  Database,
+  Layers,
+  Kanban,
+  List,
+  Table,
+  Users,
+  Target,
+  Zap,
+  Heart,
+  Tag,
+  Link as LinkIcon,
+  Mail,
+  Phone,
+  Globe,
+  Clock,
+  MapPin,
+  Shield,
+  Key,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  Bell,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Info,
+  HelpCircle,
+  Menu,
+  Grid,
+  Layout,
+  Columns,
+  Rows,
+  Split,
+  Minus,
+  Plus,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  RefreshCw,
+  RotateCcw,
+  Check,
+  Trash2 as TrashIcon,
+  Edit2,
+  Copy as CopyIcon,
+  Download,
+  Upload as UploadIcon,
+  Share2,
+  Link as LinkIcon2,
+  Flag,
+  Star as StarIcon,
+  Bookmark,
+  Tag as TagIcon,
+  Archive as ArchiveIcon,
+  File as FileIcon,
+  Folder as FolderIcon,
+  Image as ImageIcon,
+  Video,
+  Music,
+  Code,
+  Terminal,
+  Server,
+  Database as DatabaseIcon,
+  Cloud,
+  Wifi,
+  Bluetooth,
+  Cpu,
+  HardDrive,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Watch,
+  Headphones,
+  Mic,
+  Camera,
+  Printer,
+  Keyboard,
+  Mouse,
+  Gamepad,
+  Joystick,
+  Send,
+  Square,
+  Circle,
+  Triangle,
+  Heart as HeartIcon,
+  Map,
+  Route,
+  ArrowUpLeft,
+  ArrowUpRight,
+  ArrowDownLeft,
+  ArrowDownRight,
 } from 'lucide-react'
 import { useDocumentStore } from '@/store/documentStore'
 import type { Document, DocumentCoverImage } from '@/types'
@@ -43,6 +140,47 @@ const COVER_GRADIENTS = [
   'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)',
 ]
 
+// Lucide icon categories - only using icons that are actually imported
+const LUCIDE_CATEGORIES: Record<string, React.ComponentType<{ className?: string }>[]> = {
+  'Documents': [FileText, Folder, BookOpen, FileIcon, FolderIcon],
+  'Organization': [Database, Layers, Kanban, List, Table, Grid, Layout, Columns, Rows, Split],
+  'People': [Users],
+  'Time': [Calendar, Clock],
+  'Settings': [Settings],
+  'Media': [Image, Video, Music, Camera, Mic, Headphones],
+  'Code': [Code, Terminal],
+  'Communication': [Mail, Send, Phone],
+  'Navigation': [MapPin, Map, Route],
+  'Actions': [Plus, Minus, X, Check, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RefreshCw, Edit2, CopyIcon, Download, UploadIcon, Share2, LinkIcon2, Flag, StarIcon, Bookmark, TagIcon, ArchiveIcon, TrashIcon],
+  'Shapes': [Square, Circle, Triangle, HeartIcon, StarIcon],
+  'Arrows': [ArrowUp, ArrowDown, ArrowLeft, ArrowRight, ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight],
+  'Devices': [Monitor, Smartphone, Tablet, Laptop, Watch, Headphones, Camera, Printer, Keyboard, Mouse, Gamepad, Joystick],
+  'Data': [DatabaseIcon, Server, HardDrive, Cloud, Cpu],
+}
+
+// Fallback for icons that might not exist in lucide-react
+const getLucideIcon = (name: string): React.ComponentType<{ className?: string }> | null => {
+  // This is a placeholder - the actual icons are imported above
+  return null
+}
+
+const LUCIDE_ICON_NAMES: Record<string, string[]> = {
+  'Documents': ['FileText', 'Folder', 'BookOpen', 'File', 'Folder'],
+  'Organization': ['Database', 'Layers', 'Kanban', 'List', 'Table', 'Grid', 'Layout', 'Columns', 'Rows', 'Split'],
+  'People': ['Users', 'User', 'UserPlus', 'UserMinus', 'UserCheck', 'UserX', 'Users2'],
+  'Time': ['Calendar', 'Clock', 'Clock1', 'Clock2', 'Clock3', 'Clock4', 'Clock5', 'Clock6', 'Clock7', 'Clock8', 'Clock9', 'Clock10', 'Clock11', 'Clock12'],
+  'Settings': ['Settings', 'Cog', 'Wrench', 'Hammer', 'Tool', 'Wrench', 'Screwdriver'],
+  'Media': ['Image', 'Video', 'Music', 'Film', 'Camera', 'Mic', 'Headphones'],
+  'Code': ['Code', 'Terminal', 'GitBranch', 'GitCommit', 'GitMerge', 'GitPullRequest', 'GitCompare'],
+  'Communication': ['Mail', 'MessageSquare', 'MessageCircle', 'Send', 'Phone', 'PhoneCall', 'PhoneMissed', 'PhoneOff', 'PhoneIncoming', 'PhoneOutgoing'],
+  'Navigation': ['MapPin', 'Navigation', 'MapPin', 'Compass', 'Locate', 'Map', 'Route'],
+  'Actions': ['Plus', 'Minus', 'X', 'Check', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'RefreshCw', 'RotateCcw', 'Edit2', 'Copy', 'Download', 'Upload', 'Share2', 'Link', 'Flag', 'Star', 'Bookmark', 'Tag', 'Archive', 'Trash2'],
+  'Shapes': ['Square', 'Circle', 'Triangle', 'Hexagon', 'Pentagon', 'Star', 'Heart', 'Diamond'],
+  'Arrows': ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUpLeft', 'ArrowUpRight', 'ArrowDownLeft', 'ArrowDownRight', 'ArrowLeftRight', 'ArrowUpDown', 'ArrowBigUp', 'ArrowBigDown', 'ArrowBigLeft', 'ArrowBigRight'],
+  'Devices': ['Monitor', 'Smartphone', 'Tablet', 'Laptop', 'Watch', 'Headphones', 'Camera', 'Printer', 'Scanner', 'Keyboard', 'Mouse', 'Gamepad', 'Joystick'],
+  'Data': ['Database', 'Database', 'Server', 'HardDrive', 'Cloud', 'Cpu', 'MemoryStick', 'Usb'],
+}
+
 // Emoji categories for icon picker
 const EMOJI_CATEGORIES: Record<string, string[]> = {
   'Frequently Used': ['📄', '📝', '📋', '📁', '📂', '⭐', '🔖', '🏷️', '📌', '🔔'],
@@ -68,7 +206,9 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
   const [showCoverPicker, setShowCoverPicker] = useState(false)
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [activeEmojiCategory, setActiveEmojiCategory] = useState<string>('Frequently Used')
+  const [activeLucideCategory, setActiveLucideCategory] = useState<string>('Documents')
   const [iconSearch, setIconSearch] = useState('')
+  const [iconPickerMode, setIconPickerMode] = useState<'emoji' | 'lucide'>('emoji')
   const [coverImageUrl, setCoverImageUrl] = useState('')
   const titleInputRef = useRef<HTMLInputElement>(null)
   const iconPickerRef = useRef<HTMLDivElement>(null)
@@ -344,13 +484,30 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
                 <div className="p-3 border-b border-notion-border flex items-center justify-between">
                   <h3 className="text-sm font-medium text-notion-text">Choose Icon</h3>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="Search emojis..."
-                      value={iconSearch}
-                      onChange={(e) => setIconSearch(e.target.value)}
-                      className="flex-1 px-3 py-1.5 text-sm bg-notion-bgSecondary border border-notion-border rounded-lg text-notion-text placeholder:text-notion-textMuted focus:outline-none focus:ring-2 focus:ring-notion-accent"
-                    />
+                    <div className="flex rounded-lg bg-notion-bgSecondary border border-notion-border">
+                      <button
+                        onClick={() => { setIconPickerMode('emoji'); setIconSearch(''); }}
+                        className={cn(
+                          'px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors',
+                          iconPickerMode === 'emoji'
+                            ? 'bg-notion-accent text-white'
+                            : 'text-notion-textMuted hover:text-notion-text'
+                        )}
+                      >
+                        Emoji
+                      </button>
+                      <button
+                        onClick={() => { setIconPickerMode('lucide'); setIconSearch(''); }}
+                        className={cn(
+                          'px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors',
+                          iconPickerMode === 'lucide'
+                            ? 'bg-notion-accent text-white'
+                            : 'text-notion-textMuted hover:text-notion-text'
+                        )}
+                      >
+                        Icons
+                      </button>
+                    </div>
                     <button
                       onClick={handleCustomIcon}
                       className="px-3 py-1.5 text-sm bg-notion-accent text-white rounded-lg hover:bg-notion-accent/90 transition-colors"
@@ -362,13 +519,20 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
                 
                 {/* Category tabs */}
                 <div className="px-2 py-2 border-b border-notion-border overflow-x-auto flex gap-1">
-                  {Object.keys(EMOJI_CATEGORIES).map((category) => (
+                  {Object.keys(iconPickerMode === 'emoji' ? EMOJI_CATEGORIES : LUCIDE_CATEGORIES).map((category) => (
                     <button
                       key={category}
-                      onClick={() => { setActiveEmojiCategory(category); setIconSearch(''); }}
+                      onClick={() => { 
+                        if (iconPickerMode === 'emoji') {
+                          setActiveEmojiCategory(category);
+                        } else {
+                          setActiveLucideCategory(category);
+                        }
+                        setIconSearch(''); 
+                      }}
                       className={cn(
                         'px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors',
-                        activeEmojiCategory === category
+                        (iconPickerMode === 'emoji' ? activeEmojiCategory : activeLucideCategory) === category
                           ? 'bg-notion-accent text-white'
                           : 'text-notion-textMuted hover:text-notion-text hover:bg-notion-bgSecondary'
                       )}
@@ -378,27 +542,55 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
                   ))}
                 </div>
                 
-                {/* Emoji grid */}
+                {/* Emoji/Lucide grid */}
                 <div className="p-2 max-h-96 overflow-y-auto">
                   <div className="grid grid-cols-8 gap-1">
-                    {filteredEmojis.map((emoji) => (
-                      <button
-                        key={emoji}
-                        onClick={() => handleIconSelect(emoji)}
-                        className={cn(
-                          'w-10 h-10 rounded-lg flex items-center justify-center text-2xl transition-colors',
-                          'hover:bg-notion-bgSecondary hover:scale-110',
-                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-notion-accent'
+                    {iconPickerMode === 'emoji' ? (
+                      <>
+                        {filteredEmojis.map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleIconSelect(emoji)}
+                            className={cn(
+                              'w-10 h-10 rounded-lg flex items-center justify-center text-2xl transition-colors',
+                              'hover:bg-notion-bgSecondary hover:scale-110',
+                              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-notion-accent'
+                            )}
+                            aria-label={emoji}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                        {filteredEmojis.length === 0 && (
+                          <div className="col-span-8 py-8 text-center text-notion-textMuted text-sm">
+                            No emojis found
+                          </div>
                         )}
-                        aria-label={emoji}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                    {filteredEmojis.length === 0 && (
-                      <div className="col-span-8 py-8 text-center text-notion-textMuted text-sm">
-                        No emojis found
-                      </div>
+                      </>
+                    ) : (
+                      <>
+                        {Object.keys(LUCIDE_CATEGORIES).includes(activeLucideCategory) && 
+                          LUCIDE_CATEGORIES[activeLucideCategory]?.map((IconComponent, index) => (
+                            <button
+                              key={`${activeLucideCategory}-${index}`}
+                              onClick={() => {
+                                if (document) {
+                                  updateDocument(document.id, { icon: IconComponent })
+                                }
+                                setShowIconPicker(false)
+                              }}
+                              className={cn(
+                                'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
+                                'hover:bg-notion-bgSecondary hover:scale-110',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-notion-accent'
+                              )}
+                              aria-label={LUCIDE_ICON_NAMES[activeLucideCategory]?.[index] || 'icon'}
+                            >
+                              <IconComponent className="w-6 h-6 text-notion-text" aria-hidden="true" />
+                            </button>
+                          ))
+                        }
+                      </>
                     )}
                   </div>
                 </div>

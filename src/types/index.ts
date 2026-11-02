@@ -64,6 +64,7 @@ export interface DocumentStoreState {
   getChildren: (parentId: string | null) => Document[]
   getBreadcrumbPath: (docId: string) => Document[]
   getDescendants: (docId: string) => Document[]
+  moveDocument: (id: string, newParentId: string | null) => boolean
   // Utility
   generateSlug: (title: string, parentId: string | null) => string
   // Trash operations
