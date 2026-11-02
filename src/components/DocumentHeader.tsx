@@ -27,6 +27,22 @@ const COVER_COLORS = [
   '#34495e', '#1abc9c', '#9b59b6', '#e67e22', '#e74c3c',
 ]
 
+// Gradient presets for cover images
+const COVER_GRADIENTS = [
+  'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+  'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+  'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+  'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+  'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+  'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+  'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)',
+]
+
 // Emoji categories for icon picker
 const EMOJI_CATEGORIES = {
   'Frequently Used': ['📄', '📝', '📋', '📁', '📂', '⭐', '🔖', '🏷️', '📌', '🔔'],
@@ -114,6 +130,13 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
   const handleColorCoverSelect = useCallback((color: string) => {
     if (document) {
       updateDocument(document.id, { coverImage: { type: 'color', value: color } })
+    }
+    setShowCoverPicker(false)
+  }, [document, updateDocument])
+
+  const handleGradientCoverSelect = useCallback((gradient: string) => {
+    if (document) {
+      updateDocument(document.id, { coverImage: { type: 'gradient', value: gradient } })
     }
     setShowCoverPicker(false)
   }, [document, updateDocument])
@@ -586,6 +609,34 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
                     aria-pressed={document.coverImage?.type === 'color' && document.coverImage.value === color}
                   >
                     {document.coverImage?.type === 'color' && document.coverImage.value === color && (
+                      <span className="w-5 h-5 flex items-center justify-center text-white">
+                        <X className="w-3 h-3" />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Gradient Presets */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-notion-textMuted uppercase tracking-wider mb-2">Gradients</h4>
+              <div className="grid grid-cols-5 gap-2">
+                {COVER_GRADIENTS.map((gradient, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleGradientCoverSelect(gradient)}
+                    className={cn(
+                      'w-full aspect-square rounded-lg border-2 transition-all',
+                      document.coverImage?.type === 'gradient' && document.coverImage.value === gradient
+                        ? 'border-notion-accent scale-105'
+                        : 'border-transparent hover:border-notion-border'
+                    )}
+                    style={{ backgroundImage: gradient }}
+                    aria-label={`Gradient ${index + 1}`}
+                    aria-pressed={document.coverImage?.type === 'gradient' && document.coverImage.value === gradient}
+                  >
+                    {document.coverImage?.type === 'gradient' && document.coverImage.value === gradient && (
                       <span className="w-5 h-5 flex items-center justify-center text-white">
                         <X className="w-3 h-3" />
                       </span>

@@ -99,6 +99,16 @@ export function ActionDropdown({
       },
       variant: isArchived ? 'default' : 'default',
     },
+    {
+      label: 'Move to...',
+      icon: <Move className="w-4 h-4" />,
+      action: () => {
+        // TODO: Implement move to dialog with document tree selector
+        console.log('Move to action clicked - document tree selector needed')
+        setIsOpen(false)
+      },
+      variant: 'default',
+    },
     ...additionalActions,
   ]
 
