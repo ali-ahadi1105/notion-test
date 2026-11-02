@@ -25,3 +25,54 @@ export interface SidebarState {
   toggleItemExpansion: (itemId: string) => void
   isItemExpanded: (itemId: string) => boolean
 }
+
+// Document types for Phase 2
+export type DocumentIcon = 
+  | React.ComponentType<{ className?: string }>
+  | string // emoji or image URL
+
+export interface DocumentCoverImage {
+  type: 'color' | 'image' | 'none'
+  value: string // color hex, image URL, or empty
+}
+
+export interface Document {
+  id: string
+  title: string
+  icon?: DocumentIcon
+  coverImage?: DocumentCoverImage
+  parentId: string | null
+  isArchived: boolean
+  isFavorite: boolean
+  isDeleted: boolean // soft delete for trash
+  deletedAt?: number // timestamp when deleted
+  createdAt: number
+  updatedAt: number
+  content?: string // page content (blocks)
+  slug: string
+}
+
+export interface DocumentStoreState {
+  documents: Document[]
+  // CRUD operations
+  createDocument: (doc: Omit<Document, 'id' | 'createdAt' | 'updatedAt' | 'slug'>) => Document
+  getDocument: (id: string) => Document | undefined
+  updateDocument: (id: string, updates: Partial<Omit<Document, 'id' | 'createdAt' | 'slug'>>) => Document | undefined
+  deleteDocument: (id: string, permanent?: boolean) => boolean
+  restoreDocument: (id: string) => boolean
+  // Hierarchical operations
+  getChildren: (parentId: string | null) => Document[]
+  getBreadcrumbPath: (docId: string) => Document[]
+  getDescendants: (docId: string) => Document[]
+  // Utility
+  generateSlug: (title: string, parentId: string | null) => string
+  // Trash operations
+  getTrash: () => Document[]
+  emptyTrash: () => void
+  // Favorites
+  toggleFavorite: (id: string) => void
+  getFavorites: () => Document[]
+  // Archive
+  toggleArchive: (id: string) => void
+  getArchived: () => Document[]
+}
