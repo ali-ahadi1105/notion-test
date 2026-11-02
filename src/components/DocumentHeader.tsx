@@ -44,7 +44,7 @@ const COVER_GRADIENTS = [
 ]
 
 // Emoji categories for icon picker
-const EMOJI_CATEGORIES = {
+const EMOJI_CATEGORIES: Record<string, string[]> = {
   'Frequently Used': ['📄', '📝', '📋', '📁', '📂', '⭐', '🔖', '🏷️', '📌', '🔔'],
   'Objects': ['💡', '🔑', '🔒', '🔓', '📝', '📋', '📊', '📈', '📉', '📎', '🖇️', '📏', '📐', '✂️', '🗃️', '🗄️'],
   'Nature': ['🌱', '🌿', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '☘️', '🍀', '🍁', '🍂', '🍃', '🌸', '🌹', '🌺'],
@@ -101,7 +101,7 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
   }, [document, title, updateDocument])
 
   // Handle keyboard events for title editing
-  const handleTitleKeyDown = useCallback((e: React.KeyboardEvent) => {
+  const handleTitleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur()
     } else if (e.key === 'Escape') {
@@ -274,7 +274,7 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
           className="w-full h-32 sm:h-40 relative"
           style={{
             backgroundColor: document.coverImage.type === 'color' ? document.coverImage.value : 'transparent',
-            backgroundImage: document.coverImage.type === 'image' ? `url(${document.coverImage.value})` : 'none',
+            backgroundImage: document.coverImage.type === 'gradient' ? document.coverImage.value : (document.coverImage.type === 'image' ? `url(${document.coverImage.value})` : 'none'),
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}

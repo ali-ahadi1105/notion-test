@@ -144,7 +144,7 @@ describe('DocumentHeader', () => {
     const archivedDoc = { 
       ...mockDocument, 
       isArchived: true,
-      coverImage: { type: 'color', value: '#1a1a2e' }
+      coverImage: { type: 'color' as const, value: '#1a1a2e' }
     }
     render(<DocumentHeader document={archivedDoc} />)
     

@@ -3,13 +3,21 @@ import { ActionDropdown } from '@/components/ActionDropdown'
 import type { Document } from '@/types'
 
 // Create a mock store
-const mockActionStore = {
+const mockActionStore: {
+  documents: Document[]
+  toggleFavorite: jest.Mock
+  toggleArchive: jest.Mock
+  deleteDocument: jest.Mock
+  restoreDocument: jest.Mock
+  createDocument: jest.Mock
+  getState: jest.Mock
+} = {
   documents: [
     {
       id: 'doc-1',
       title: 'Test Document',
       icon: '📄',
-      coverImage: { type: 'color', value: '#1a1a2e' },
+      coverImage: { type: 'color' as const, value: '#1a1a2e' },
       parentId: null,
       isArchived: false,
       isFavorite: false,

@@ -121,6 +121,9 @@ describe('DocumentStore', () => {
           newDoc = result.current.createDocument({
             title: 'New Page',
             parentId: null,
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -148,6 +151,9 @@ describe('DocumentStore', () => {
           newDoc = result.current.createDocument({
             title: 'Nested Page',
             parentId: 'doc-1',
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -166,6 +172,9 @@ describe('DocumentStore', () => {
           doc1 = result.current.createDocument({
             title: 'Duplicate Title',
             parentId: null,
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
         
@@ -173,6 +182,9 @@ describe('DocumentStore', () => {
           doc2 = result.current.createDocument({
             title: 'Duplicate Title',
             parentId: null,
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -188,6 +200,9 @@ describe('DocumentStore', () => {
           newDoc = result.current.createDocument({
             title: 'No Cover',
             parentId: null,
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -452,6 +467,9 @@ describe('DocumentStore', () => {
           deepDoc = result.current.createDocument({
             title: 'Deep',
             parentId: 'doc-2',
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -486,6 +504,9 @@ describe('DocumentStore', () => {
           deepDoc = result.current.createDocument({
             title: 'Deep',
             parentId: 'doc-2',
+            isArchived: false,
+            isFavorite: false,
+            isDeleted: false,
           })
         })
 
@@ -694,6 +715,9 @@ describe('DocumentStore', () => {
         result.current.createDocument({
           title: 'Persisted Page',
           parentId: null,
+          isArchived: false,
+          isFavorite: false,
+          isDeleted: false,
         })
       })
 

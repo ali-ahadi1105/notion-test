@@ -189,12 +189,12 @@ export function ActionDropdown({
           const lastElement = focusableElements[focusableElements.length - 1]
 
           if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
+            if (window.document.activeElement === firstElement) {
               e.preventDefault()
               lastElement.focus()
             }
           } else {
-            if (document.activeElement === lastElement) {
+            if (window.document.activeElement === lastElement) {
               e.preventDefault()
               firstElement.focus()
             }
@@ -231,14 +231,14 @@ export function ActionDropdown({
 
   const focusNext = useCallback(() => {
     const elements = focusableElementsRef.current
-    const currentIndex = elements.findIndex(el => el === document.activeElement)
+    const currentIndex = elements.findIndex(el => el === window.document.activeElement)
     const nextIndex = (currentIndex + 1) % elements.length
     elements[nextIndex]?.focus()
   }, [])
 
   const focusPrevious = useCallback(() => {
     const elements = focusableElementsRef.current
-    const currentIndex = elements.findIndex(el => el === document.activeElement)
+    const currentIndex = elements.findIndex(el => el === window.document.activeElement)
     const prevIndex = (currentIndex - 1 + elements.length) % elements.length
     elements[prevIndex]?.focus()
   }, [])

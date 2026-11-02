@@ -32,8 +32,8 @@ export type DocumentIcon =
   | string // emoji or image URL
 
 export interface DocumentCoverImage {
-  type: 'color' | 'image' | 'none'
-  value: string // color hex, image URL, or empty
+  type: 'color' | 'gradient' | 'image' | 'none'
+  value: string // color hex, gradient CSS, image URL, or empty
 }
 
 export interface Document {
