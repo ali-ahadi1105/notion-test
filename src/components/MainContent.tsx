@@ -2,10 +2,13 @@
 
 import { ChevronRight, MoreHorizontal, Share2, Star, Bell, HelpCircle, Menu } from 'lucide-react'
 import { useSidebarStore } from '@/store/sidebarStore'
+import { useDocumentStore } from '@/store/documentStore'
 import { mockPageTree, mockWorkspace } from '@/lib/mockData'
 import type { PageTreeNode } from '@/types'
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
+import { Editor } from '@/components/Editor'
+import { useEffect, useState } from 'react'
 
 function findPagePath(nodes: PageTreeNode[], targetId: string, path: PageTreeNode[] = []): PageTreeNode[] | null {
   for (const node of nodes) {
@@ -166,6 +169,52 @@ function TopToolbar({ activePageId }: { activePageId: string | null }) {
 
 export function MainContent({ activePageId }: { activePageId: string | null }) {
   const { isCollapsed } = useSidebarStore()
+  const { getDocument, updateDocument } = useDocumentStore()
+  const [blocks, setBlocks] = useState<import('@/types').Block[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load blocks when activePageId changes
+  useEffect(() => {
+    if (activePageId) {
+      const doc = getDocument(activePageId)
+      if (doc) {
+        setBlocks(doc.blocks || [])
+      } else {
+        setBlocks([])
+      }
+    } else {
+      setBlocks([])
+    }
+    setIsLoading(false)
+  }, [activePageId, getDocument])
+
+  // Save blocks when they change
+  useEffect(() => {
+    if (activePageId && !isLoading) {
+      updateDocument(activePageId, { blocks, updatedAt: Date.now() })
+    }
+  }, [blocks, activePageId, isLoading, updateDocument])
+
+  if (isLoading) {
+    return (
+      <main
+        className={cn(
+          'flex-1 flex flex-col min-h-screen transition-all duration-200 ease-in-out',
+          'bg-notion-bgSecondary',
+          isCollapsed ? 'lg:ml-16' : 'lg:ml-[280px]'
+        )}
+        style={{ marginLeft: isCollapsed ? '64px' : '280px' }}
+        role="main"
+      >
+        <TopToolbar activePageId={activePageId} />
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-pulse text-notion-textMuted">Loading...</div>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main
@@ -181,12 +230,11 @@ export function MainContent({ activePageId }: { activePageId: string | null }) {
       <div className="flex-1 overflow-y-auto">
         <PageTitle activePageId={activePageId} />
         <div className="px-6 pb-12">
-          {/* Page content will go here */}
-          <div className="max-w-3xl">
-            <div className="prose prose-notion max-w-none">
-              <p className="text-notion-textMuted italic">This is where the page content will be rendered.</p>
-            </div>
-          </div>
+          <Editor
+            blocks={blocks}
+            onBlocksChange={setBlocks}
+            placeholder="Start typing..."
+          />
         </div>
       </div>
     </main>

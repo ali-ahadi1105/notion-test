@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Document, DocumentStoreState, DocumentCoverImage } from '@/types'
+import type { Document, DocumentStoreState, DocumentCoverImage, Block, BlockType } from '@/types'
 
 // Helper functions
 const generateId = (): string => {
@@ -59,6 +59,14 @@ const getRandomCover = (): DocumentCoverImage => {
 // Initial mock documents for testing
 const createInitialDocuments = (): Document[] => {
   const now = Date.now()
+  const createEmptyBlocks = (): Block[] => [{
+    id: generateId(),
+    type: 'paragraph',
+    content: '',
+    createdAt: now,
+    updatedAt: now,
+  }]
+
   return [
     {
       id: 'doc-1',
@@ -71,7 +79,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 7,
       updatedAt: now - 86400000 * 7,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started',
     },
     {
@@ -85,7 +93,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 6,
       updatedAt: now - 86400000 * 6,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/introduction',
     },
     {
@@ -99,7 +107,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 5,
       updatedAt: now - 86400000 * 5,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/quick-start',
     },
     {
@@ -113,7 +121,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 4,
       updatedAt: now - 86400000 * 4,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/core-concepts',
     },
     {
@@ -127,7 +135,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 3,
       updatedAt: now - 86400000 * 3,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/core-concepts/blocks',
     },
     {
@@ -141,7 +149,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 2,
       updatedAt: now - 86400000 * 2,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/core-concepts/pages',
     },
     {
@@ -155,7 +163,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 1,
       updatedAt: now - 86400000 * 1,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'getting-started/core-concepts/databases',
     },
     {
@@ -169,7 +177,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 10,
       updatedAt: now - 86400000 * 10,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'features',
     },
     {
@@ -183,7 +191,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 9,
       updatedAt: now - 86400000 * 9,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'features/editor',
     },
     {
@@ -197,7 +205,7 @@ const createInitialDocuments = (): Document[] => {
       isDeleted: false,
       createdAt: now - 86400000 * 15,
       updatedAt: now - 86400000 * 15,
-      content: '',
+      blocks: createEmptyBlocks(),
       slug: 'settings',
     },
   ]
@@ -215,6 +223,15 @@ export const useDocumentStore = create<DocumentStoreState>()(
         const getParentSlug = (id: string) => get().documents.find(d => d.id === id)?.slug
         const slug = generateSlug(docData.title, docData.parentId, existingSlugs, getParentSlug)
         
+        // Create a default empty paragraph block for new documents
+        const defaultBlocks: Block[] = [{
+          id: generateId(),
+          type: 'paragraph',
+          content: '',
+          createdAt: now,
+          updatedAt: now,
+        }]
+
         const newDoc: Document = {
           ...docData,
           id: generateId(),
@@ -225,6 +242,7 @@ export const useDocumentStore = create<DocumentStoreState>()(
           isFavorite: docData.isFavorite ?? false,
           isDeleted: docData.isDeleted ?? false,
           coverImage: docData.coverImage ?? getRandomCover(),
+          blocks: docData.blocks ?? defaultBlocks,
         }
 
         set((state) => ({
@@ -457,12 +475,20 @@ export const useDocumentStore = create<DocumentStoreState>()(
       onRehydrateStorage: () => (state) => {
         // Migration: ensure all documents have required fields
         if (state) {
+          const now = Date.now()
           state.documents = state.documents.map((doc) => ({
             ...doc,
             isDeleted: doc.isDeleted ?? false,
             isArchived: doc.isArchived ?? false,
             isFavorite: doc.isFavorite ?? false,
             coverImage: doc.coverImage ?? getRandomCover(),
+            blocks: doc.blocks && doc.blocks.length > 0 ? doc.blocks : [{
+              id: generateId(),
+              type: 'paragraph',
+              content: '',
+              createdAt: now,
+              updatedAt: now,
+            }],
           }))
         }
       },
