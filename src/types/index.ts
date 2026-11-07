@@ -49,6 +49,8 @@ export type BlockType =
   | 'callout'
   | 'quote'
   | 'divider'
+  // Internal type for nested list items during export
+  | 'nestedListItem'
 
 export interface BaseBlock {
   id: string
@@ -107,6 +109,13 @@ export interface DividerBlock extends BaseBlock {
   type: 'divider'
 }
 
+// Internal type for nested list items during export
+export interface NestedListItemBlock extends BaseBlock {
+  type: 'nestedListItem'
+  content: string
+  items?: ListItem[] // nested children
+}
+
 export type Block = 
   | ParagraphBlock
   | HeadingBlock
@@ -116,6 +125,7 @@ export type Block =
   | CalloutBlock
   | QuoteBlock
   | DividerBlock
+  | NestedListItemBlock
 
 export interface Document {
   id: string

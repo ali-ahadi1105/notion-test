@@ -113,6 +113,7 @@ import {
   ArrowDownLeft,
   ArrowDownRight,
 } from 'lucide-react'
+import { exportDocumentAsMarkdown, exportDocumentAsJson } from '@/lib/export'
 import { useDocumentStore } from '@/store/documentStore'
 import type { Document, DocumentCoverImage } from '@/types'
 import { cn } from '@/lib/utils'
@@ -350,6 +351,21 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
     }
     setShowActionMenu(false)
   }, [document, toggleArchive])
+
+  // Export handlers
+  const handleExportMarkdown = useCallback(() => {
+    if (document) {
+      exportDocumentAsMarkdown(document)
+    }
+    setShowActionMenu(false)
+  }, [document])
+
+  const handleExportJson = useCallback(() => {
+    if (document) {
+      exportDocumentAsJson(document)
+    }
+    setShowActionMenu(false)
+  }, [document])
 
   // Close pickers when clicking outside
   useEffect(() => {
@@ -744,6 +760,34 @@ export function DocumentHeader({ document, onClose }: DocumentHeaderProps) {
                         >
                           <Archive className="w-4 h-4" />
                           {isArchived ? 'Restore from archive' : 'Move to archive'}
+                        </button>
+                        
+                        <hr className="my-1 border-notion-border" />
+                        
+                        <button
+                          onClick={handleExportMarkdown}
+                          className={cn(
+                            'w-full px-4 py-2 text-left text-sm flex items-center gap-2',
+                            'text-notion-text hover:bg-notion-bgSecondary',
+                            'focus-visible:outline-none focus-visible:bg-notion-bgSecondary'
+                          )}
+                          role="menuitem"
+                        >
+                          <FileText className="w-4 h-4" />
+                          Export as Markdown
+                        </button>
+                        
+                        <button
+                          onClick={handleExportJson}
+                          className={cn(
+                            'w-full px-4 py-2 text-left text-sm flex items-center gap-2',
+                            'text-notion-text hover:bg-notion-bgSecondary',
+                            'focus-visible:outline-none focus-visible:bg-notion-bgSecondary'
+                          )}
+                          role="menuitem"
+                        >
+                          <Download className="w-4 h-4" />
+                          Export as JSON
                         </button>
                         
                         <hr className="my-1 border-notion-border" />
