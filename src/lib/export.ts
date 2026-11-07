@@ -1,6 +1,6 @@
 'use client'
 
-import type { Block, Document } from '@/types'
+import type { Block, Document, NestedListItemBlock } from '@/types'
 
 // Export block to Markdown
 export function blockToMarkdown(block: Block, indent: number = 0): string {
@@ -31,7 +31,7 @@ export function blockToMarkdown(block: Block, indent: number = 0): string {
             ? '\n' + item.children.map(child => blockToMarkdown({
                 ...child,
                 type: 'nestedListItem',
-              } as Block, indent + 2)).join('\n')
+              } as NestedListItemBlock, indent + 2)).join('\n')
             : ''
           return `${itemIndent}- ${item.content}${children}`
         })
@@ -45,7 +45,7 @@ export function blockToMarkdown(block: Block, indent: number = 0): string {
         ? '\n' + block.items.map((child, childIndex) => blockToMarkdown({
             ...child,
             type: 'nestedListItem',
-          } as Block, indent + 1)).join('\n')
+          } as NestedListItemBlock, indent + 1)).join('\n')
         : ''
       return `${nestedIndent}- ${nestedContent}${nestedChildren}`
     
@@ -58,7 +58,7 @@ export function blockToMarkdown(block: Block, indent: number = 0): string {
             ? '\n' + item.children.map((child, childIndex) => blockToMarkdown({
                 ...child,
                 type: 'nestedListItem',
-              } as Block, indent + 2)).join('\n')
+              } as NestedListItemBlock, indent + 2)).join('\n')
             : ''
           return `${itemIndent}${index + 1}. ${item.content}${children}`
         })

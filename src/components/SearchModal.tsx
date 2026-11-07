@@ -125,15 +125,28 @@ export function SearchModal({ isOpen, onClose, onSelectDocument }: SearchModalPr
     }
   }, [isOpen])
 
+  // Track if navigation was via keyboard (for scroll behavior)
+  const keyboardNavigationRef = useRef(false)
+
+  // Scroll selected item into view (only on keyboard navigation)
+  useEffect(() => {
+    if (keyboardNavigationRef.current && itemsRef.current[selectedIndex]) {
+      itemsRef.current[selectedIndex].scrollIntoView({ block: 'nearest' })
+    }
+    keyboardNavigationRef.current = false // Reset after scroll
+  }, [selectedIndex])
+
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
+        keyboardNavigationRef.current = true
         setSelectedIndex(prev => (prev + 1) % Math.max(1, results.length))
         break
       case 'ArrowUp':
         e.preventDefault()
+        keyboardNavigationRef.current = true
         setSelectedIndex(prev => (prev - 1 + Math.max(1, results.length)) % Math.max(1, results.length))
         break
       case 'Enter':
@@ -150,10 +163,11 @@ export function SearchModal({ isOpen, onClose, onSelectDocument }: SearchModalPr
     }
   }, [results, selectedIndex, onSelectDocument, onClose])
 
-  // Close on click outside
+  // Close on click outside (use backdrop for click outside detection instead)
   useEffect(() => {
+    if (!isOpen) return
     const handleClickOutside = (e: MouseEvent) => {
-      if (isOpen && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         onClose()
       }
     }
@@ -161,13 +175,6 @@ export function SearchModal({ isOpen, onClose, onSelectDocument }: SearchModalPr
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen, onClose])
-
-  // Scroll selected item into view
-  useEffect(() => {
-    if (itemsRef.current[selectedIndex]) {
-      itemsRef.current[selectedIndex].scrollIntoView({ block: 'nearest' })
-    }
-  }, [selectedIndex])
 
   if (!isOpen) return null
 
