@@ -1,10 +1,11 @@
 'use client'
 
-import { ChevronRight, ChevronDown, ChevronLeft, Plus, Search, Trash2, Settings, FilePlus, Home } from 'lucide-react'
+import { ChevronRight, ChevronDown, ChevronLeft, Plus, Search, Trash2, Settings, FilePlus, Home, Star, Bookmark } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useSidebarStore } from '@/store/sidebarStore'
+import { useDocumentStore } from '@/store/documentStore'
 import { mockPageTree, mockWorkspace } from '@/lib/mockData'
-import type { PageTreeNode } from '@/types'
+import type { PageTreeNode, Document } from '@/types'
 import { cn } from '@/lib/utils'
 
 interface PageTreeItemProps {
@@ -261,6 +262,59 @@ function ResizeHandle({ isCollapsed }: { isCollapsed: boolean }) {
   )
 }
 
+function FavoritesSection({ isCollapsed, activePageId, onSelectPage }: { 
+  isCollapsed: boolean 
+  activePageId: string | null
+  onSelectPage: (pageId: string) => void
+}) {
+  const { getFavorites } = useDocumentStore()
+  const favorites = getFavorites()
+
+  if (favorites.length === 0) return null
+
+  return (
+    <div className="px-2 py-3 space-y-1 border-b border-notion-border bg-notion-bg">
+      <div className="flex items-center justify-between px-2 mb-2">
+        <h3 className="text-xs font-semibold text-notion-textMuted uppercase tracking-wider flex items-center gap-1">
+          <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" aria-hidden="true" />
+          Favorites
+        </h3>
+      </div>
+      <ul className="space-y-1" role="list">
+        {favorites.map((doc: Document) => (
+          <li key={doc.id} role="listitem">
+            <button
+              onClick={() => onSelectPage(doc.id)}
+              className={cn(
+                'w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors',
+                'text-sm font-medium',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-notion-accent',
+                activePageId === doc.id
+                  ? 'bg-notion-bgSecondary text-notion-text'
+                  : 'text-notion-textSecondary hover:bg-notion-bgSecondary hover:text-notion-text'
+              )}
+              style={{ paddingLeft: '12px' }}
+              aria-current={activePageId === doc.id ? 'page' : undefined}
+            >
+              {doc.icon && (
+                <span className="flex-shrink-0" aria-hidden="true">
+                  {typeof doc.icon === 'string' ? (
+                    <span style={{ fontSize: '16px' }}>{doc.icon}</span>
+                  ) : (
+                    <doc.icon className="w-4 h-4 text-notion-textMuted" />
+                  )}
+                </span>
+              )}
+              <span className="truncate flex-1">{doc.title}</span>
+              <Star className="w-3.5 h-3.5 text-yellow-400 fill-current flex-shrink-0" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function Sidebar() {
   const { isCollapsed, width, setCollapsed, activePageId, setActivePage } = useSidebarStore()
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -287,6 +341,7 @@ export function Sidebar() {
       <div className="relative flex flex-col h-full">
         <WorkspaceHeader isCollapsed={isCollapsed} />
         <QuickActions isCollapsed={isCollapsed} />
+        {!isCollapsed && <FavoritesSection isCollapsed={isCollapsed} activePageId={activePageId} onSelectPage={setActivePage} />}
         <PageTree activePageId={activePageId} onSelectPage={setActivePage} />
         {!isCollapsed && <ResizeHandle isCollapsed={isCollapsed} />}
       </div>

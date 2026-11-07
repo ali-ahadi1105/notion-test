@@ -199,4 +199,13 @@ describe('DocumentHeader', () => {
     expect(moreBtn).toHaveAttribute('aria-haspopup', 'menu')
     expect(moreBtn).toHaveAttribute('aria-expanded', 'false')
   })
+
+  it('shows export options in action menu', () => {
+    render(<DocumentHeader document={mockDocument} />)
+    const moreBtn = screen.getByLabelText('More actions')
+    fireEvent.click(moreBtn)
+    
+    expect(screen.getByRole('menuitem', { name: /export as markdown/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /export as json/i })).toBeInTheDocument()
+  })
 })

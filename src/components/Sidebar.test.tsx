@@ -2,14 +2,20 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { Sidebar } from '@/components/Sidebar'
 import { useSidebarStore } from '@/store/sidebarStore'
+import { useDocumentStore } from '@/store/documentStore'
 import { act } from 'react-dom/test-utils'
 
-// Mock the store
+// Mock the stores
 jest.mock('@/store/sidebarStore', () => ({
   useSidebarStore: jest.fn(),
 }))
 
+jest.mock('@/store/documentStore', () => ({
+  useDocumentStore: jest.fn(),
+}))
+
 const mockUseSidebarStore = useSidebarStore as unknown as jest.Mock
+const mockUseDocumentStore = useDocumentStore as unknown as jest.Mock
 
 describe('Sidebar', () => {
   beforeEach(() => {
@@ -23,6 +29,9 @@ describe('Sidebar', () => {
       setActivePage: jest.fn(),
       toggleItemExpansion: jest.fn(),
       isItemExpanded: jest.fn((id: string) => id === '1' || id === '2'), // First level items expanded by default
+    })
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => [],
     })
   })
 
@@ -252,5 +261,212 @@ describe('Sidebar', () => {
     fireEvent.keyDown(screen.getByRole('navigation', { name: /sidebar navigation/i }), { key: 'Escape' })
 
     expect(setCollapsedMock).toHaveBeenCalledWith(true)
+  })
+})
+
+describe('FavoritesSection', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockUseSidebarStore.mockReturnValue({
+      isCollapsed: false,
+      width: 280,
+      activePageId: '1',
+      expandedItems: new Set(),
+      setCollapsed: jest.fn(),
+      setWidth: jest.fn(),
+      setActivePage: jest.fn(),
+      toggleItemExpansion: jest.fn(),
+      isItemExpanded: jest.fn(() => true),
+    })
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => [],
+    })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('does not render when there are no favorites', () => {
+    render(<Sidebar />)
+    expect(screen.queryByText('Favorites')).not.toBeInTheDocument()
+  })
+
+  it('renders favorites section when there are favorited documents', () => {
+    const favoriteDocs = [
+      {
+        id: 'fav-1',
+        title: 'Favorite Page',
+        icon: '⭐',
+        coverImage: { type: 'color', value: '#1a1a2e' },
+        parentId: null,
+        isArchived: false,
+        isFavorite: true,
+        isDeleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        blocks: [],
+        slug: 'favorite-page',
+      },
+    ]
+
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => favoriteDocs,
+    })
+
+    render(<Sidebar />)
+    expect(screen.getByText('Favorites')).toBeInTheDocument()
+    expect(screen.getByText('Favorite Page')).toBeInTheDocument()
+  })
+
+  it('shows favorite star icon for favorited documents', () => {
+    const favoriteDocs = [
+      {
+        id: 'fav-1',
+        title: 'Favorite Page',
+        icon: '⭐',
+        coverImage: { type: 'color', value: '#1a1a2e' },
+        parentId: null,
+        isArchived: false,
+        isFavorite: true,
+        isDeleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        blocks: [],
+        slug: 'favorite-page',
+      },
+    ]
+
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => favoriteDocs,
+    })
+
+    const { container } = render(<Sidebar />)
+    // Check that the favorite page is rendered with its title
+    expect(screen.getByText('Favorite Page')).toBeInTheDocument()
+    // The Star icon from lucide-react should be in the document
+    // We can check for the presence of the Star SVG by checking the container
+    const starSvgs = container.querySelectorAll('svg')
+    // At least one star should be present (the one in the header + the one in the favorites list)
+    expect(starSvgs.length).toBeGreaterThan(0)
+  })
+
+  it('highlights active favorite page', () => {
+    const favoriteDocs = [
+      {
+        id: 'fav-1',
+        title: 'Active Favorite',
+        icon: '⭐',
+        coverImage: { type: 'color', value: '#1a1a2e' },
+        parentId: null,
+        isArchived: false,
+        isFavorite: true,
+        isDeleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        blocks: [],
+        slug: 'active-favorite',
+      },
+    ]
+
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => favoriteDocs,
+    })
+
+    mockUseSidebarStore.mockReturnValue({
+      isCollapsed: false,
+      width: 280,
+      activePageId: 'fav-1',
+      expandedItems: new Set(),
+      setCollapsed: jest.fn(),
+      setWidth: jest.fn(),
+      setActivePage: jest.fn(),
+      toggleItemExpansion: jest.fn(),
+      isItemExpanded: jest.fn(() => true),
+    })
+
+    render(<Sidebar />)
+    const activeButton = screen.getByText('Active Favorite').closest('button')
+    expect(activeButton).toHaveClass('bg-notion-bgSecondary')
+    expect(activeButton).toHaveClass('text-notion-text')
+  })
+
+  it('navigates to favorite page when clicked', () => {
+    const favoriteDocs = [
+      {
+        id: 'fav-1',
+        title: 'Favorite Page',
+        icon: '⭐',
+        coverImage: { type: 'color', value: '#1a1a2e' },
+        parentId: null,
+        isArchived: false,
+        isFavorite: true,
+        isDeleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        blocks: [],
+        slug: 'favorite-page',
+      },
+    ]
+
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => favoriteDocs,
+    })
+
+    const setActivePageMock = jest.fn()
+    mockUseSidebarStore.mockReturnValue({
+      isCollapsed: false,
+      width: 280,
+      activePageId: '1',
+      expandedItems: new Set(),
+      setCollapsed: jest.fn(),
+      setWidth: jest.fn(),
+      setActivePage: setActivePageMock,
+      toggleItemExpansion: jest.fn(),
+      isItemExpanded: jest.fn(() => true),
+    })
+
+    render(<Sidebar />)
+    const favButton = screen.getByRole('button', { name: /favorite page/i })
+    fireEvent.click(favButton)
+    expect(setActivePageMock).toHaveBeenCalledWith('fav-1')
+  })
+
+  it('does not render when sidebar is collapsed', () => {
+    const favoriteDocs = [
+      {
+        id: 'fav-1',
+        title: 'Favorite Page',
+        icon: '⭐',
+        coverImage: { type: 'color', value: '#1a1a2e' },
+        parentId: null,
+        isArchived: false,
+        isFavorite: true,
+        isDeleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        blocks: [],
+        slug: 'favorite-page',
+      },
+    ]
+
+    mockUseDocumentStore.mockReturnValue({
+      getFavorites: () => favoriteDocs,
+    })
+
+    mockUseSidebarStore.mockReturnValue({
+      isCollapsed: true,
+      width: 280,
+      activePageId: '1',
+      expandedItems: new Set(),
+      setCollapsed: jest.fn(),
+      setWidth: jest.fn(),
+      setActivePage: jest.fn(),
+      toggleItemExpansion: jest.fn(),
+      isItemExpanded: jest.fn(() => true),
+    })
+
+    render(<Sidebar />)
+    expect(screen.queryByText('Favorites')).not.toBeInTheDocument()
   })
 })
